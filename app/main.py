@@ -13,11 +13,11 @@ def main():
 
     while True:
         stream, _addr = server_socket.accept() # wait for client
-        thread = Thread(target=route_handler, args=(stream, _addr, args.directory))
+        thread = Thread(target=route_handler, args=(stream, args.directory))
         thread.start()
 
 
-def route_handler(stream, _addr, directory):
+def route_handler(stream, directory):
 
     while True:
         req_data = stream.recv(4096).decode()
@@ -43,7 +43,6 @@ def route_handler(stream, _addr, directory):
                 get_file_res = get_file_handler(path, directory)
                 stream.send(get_file_res.encode())
             elif method == "POST":
-                pass
                 post_file_res = post_file_handler(path, directory, body_content)
                 stream.send(post_file_res.encode())
         else:
