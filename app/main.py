@@ -1,15 +1,19 @@
 import socket
+from threading import Thread
 
 def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
 
     while True:
         stream, _addr = server_socket.accept() # wait for client
-        route_handler(stream)
+        # route_handler(stream)
+        thread = Thread(target=route_handler, args=(stream,))
+        thread.start()
 
 
 def route_handler(stream):
 
+    while True:
         req_data = stream.recv(4096).decode()
         if not req_data:
             return
@@ -25,8 +29,8 @@ def route_handler(stream):
             echo_res = echo_handler(path)
             stream.send(echo_res.encode())
         elif path.startswith("/user-agent"):
-            # print(f"REQ LINES: {req_lines})
-            ua_res = user_agent_handler(req_lines)
+            # ua_res = user_agent_handler(req_lines)
+            ua_res = user_agent_handler(user_agent)
             stream.send(ua_res.encode())
         else:
             http_not_found = "HTTP/1.1 404 NOT FOUND\r\n\r\n"
@@ -45,9 +49,9 @@ def echo_handler(path):
 
     return http_res
 
-def user_agent_handler(req_lines):
-    print(req_lines)
-    _ua_header, ua  = req_lines[2].split(": ")
+def user_agent_handler(user_agent):
+    print(f"HERE: {user_agent}")
+    _ua_header, ua = user_agent.split(": ")
 
     content_type = "Content-Type: text/plain"
     content_len = f"Content-Length: {len(ua)}"
