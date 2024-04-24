@@ -16,6 +16,7 @@ def route_handler(stream):
 
         req_lines = req_data.split("\r\n")
         method, path, version = req_lines[0].split(" ")
+        user_agent = req_lines[2]
 
         if path == "/":
             http_res = "HTTP/1.1 200 OK\r\n\r\n"
@@ -23,6 +24,10 @@ def route_handler(stream):
         elif path.startswith("/echo/"):
             echo_res = echo_handler(path)
             stream.send(echo_res.encode())
+        elif path.startswith("/user-agent"):
+            # print(f"REQ LINES: {req_lines})
+            ua_res = user_agent_handler(req_lines)
+            stream.send(ua_res.encode())
         else:
             http_not_found = "HTTP/1.1 404 NOT FOUND\r\n\r\n"
             stream.send(http_not_found.encode())
@@ -39,6 +44,18 @@ def echo_handler(path):
     http_res = f"{status_line}\r\n{content_type}\r\n{content_len}\r\n\r\n{echo_str}\r\n\r\n"
 
     return http_res
+
+def user_agent_handler(req_lines):
+    print(req_lines)
+    _ua_header, ua  = req_lines[2].split(": ")
+
+    content_type = "Content-Type: text/plain"
+    content_len = f"Content-Length: {len(ua)}"
+    status_line = "HTTP/1.1 200 OK"
+    http_res = f"{status_line}\r\n{content_type}\r\n{content_len}\r\n\r\n{ua}\r\n\r\n"
+
+    return http_res
+
 
 
 if __name__ == "__main__":
