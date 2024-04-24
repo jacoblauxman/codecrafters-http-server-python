@@ -25,7 +25,6 @@ def route_handler(stream, _addr, directory):
             return
 
         req_lines = req_data.split("\r\n")
-        print(f"REQ LINES:\n{req_lines}")
         method, path, version = req_lines[0].split(" ")
         user_agent = req_lines[2]
         body_content = req_lines[-1]
