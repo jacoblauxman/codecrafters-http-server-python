@@ -10,8 +10,9 @@ def route_handler(stream, directory):
             return
 
         req_lines = req_data.split("\r\n")
+
         method, path, version = req_lines[0].split(" ")
-        user_agent = req_lines[2]
+        headers = parse_headers(req_lines)
         body_content = req_lines[-1]
 
         if path == "/":
@@ -19,11 +20,11 @@ def route_handler(stream, directory):
             stream.send(http_res.encode())
 
         elif path.startswith("/echo/"):
-            echo_res = echo_handler(path)
+            echo_res = echo_handler(path, headers)
             stream.send(echo_res.encode())
 
         elif path.startswith("/user-agent"):
-            ua_res = user_agent_handler(user_agent)
+            ua_res = user_agent_handler(headers)
             stream.send(ua_res.encode())
 
         elif path.startswith("/files"):
@@ -35,7 +36,20 @@ def route_handler(stream, directory):
                 stream.send(post_file_res.encode())
 
         else:
-            http_not_found = "HTTP/1.1 404 NOT FOUND\r\n\r\n"
+            http_not_found = "HTTP/1.1 404 Not Found\r\n\r\n"
             stream.send(http_not_found.encode())
 
         stream.close()
+
+
+def parse_headers(req_lines):
+    headers = {}
+
+    lines = req_lines[1:]
+    for line in lines:
+        if line == '':
+            break
+        key, val = line.split(": ", 1)
+        headers[key] = val
+
+    return headers

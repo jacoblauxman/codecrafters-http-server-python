@@ -15,7 +15,7 @@ def get_file_handler(path, directory):
 
             return http_res
     else:
-        http_not_found = "HTTP/1.1 404 NOT FOUND\r\n\r\n"
+        http_not_found = "HTTP/1.1 404 Not Found\r\n\r\n"
 
         return http_not_found
 
@@ -26,4 +26,4 @@ def post_file_handler(path, directory, content):
     with open(file_path, "w") as file:
         file.write(content)
 
-    return "HTTP/1.1 201 CREATED\r\n\r\n"
+    return "HTTP/1.1 201 Created\r\n\r\n"
