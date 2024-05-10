@@ -1,15 +1,20 @@
+import gzip
+
 def echo_handler(path, headers):
-    echo_str = path.split("/echo/")[-1]
+    echo_bytes = path.split("/echo/")[-1].encode()
     encodings = headers.get("Accept-Encoding", "").split(", ")
 
-    if any("gzip" in encoding for encoding in encodings):
-        gzip = "Content-Encoding: gzip\r\n\r\n"
-    else:
-        gzip = ""
-
     content_type = "Content-Type: text/plain"
-    content_len = f"Content-Length: {len(echo_str)}"
     status_line = "HTTP/1.1 200 OK"
-    http_res = f"{status_line}\r\n{gzip}{content_type}\r\n{content_len}\r\n\r\n{echo_str}"
 
+    if "gzip" in encodings:
+        encoding_header = "Content-Encoding: gzip\r\n"
+        echo_bytes = gzip.compress(echo_bytes)
+
+        content_len = f"Content-Length: {len(echo_bytes)}"
+    else:
+        encoding_header = ""
+        content_len = f"Content-Length: {len(echo_bytes)}"
+
+    http_res = f"{status_line}\r\n{encoding_header}{content_type}\r\n{content_len}\r\n\r\n".encode() + echo_bytes
     return http_res

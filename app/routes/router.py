@@ -16,28 +16,29 @@ def route_handler(stream, directory):
         body_content = req_lines[-1]
 
         if path == "/":
-            http_res = "HTTP/1.1 200 OK\r\n\r\n"
-            stream.send(http_res.encode())
+            http_res = "HTTP/1.1 200 OK\r\n\r\n".encode()
+            stream.send(http_res)
 
         elif path.startswith("/echo/"):
             echo_res = echo_handler(path, headers)
-            stream.send(echo_res.encode())
+            stream.send(echo_res)
 
         elif path.startswith("/user-agent"):
             ua_res = user_agent_handler(headers)
-            stream.send(ua_res.encode())
+            stream.send(ua_res)
 
         elif path.startswith("/files"):
             if method == "GET":
                 get_file_res = get_file_handler(path, directory)
-                stream.send(get_file_res.encode())
+                stream.send(get_file_res)
+
             elif method == "POST":
                 post_file_res = post_file_handler(path, directory, body_content)
-                stream.send(post_file_res.encode())
+                stream.send(post_file_res)
 
         else:
-            http_not_found = "HTTP/1.1 404 Not Found\r\n\r\n"
-            stream.send(http_not_found.encode())
+            http_not_found = "HTTP/1.1 404 Not Found\r\n\r\n".encode()
+            stream.send(http_not_found)
 
         stream.close()
 

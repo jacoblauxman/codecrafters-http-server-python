@@ -11,7 +11,7 @@ def get_file_handler(path, directory):
             content_type = "Content-Type: application/octet-stream"
             content_len = f"Content-Length: {len(file_content)}"
             status_line = "HTTP/1.1 200 OK"
-            http_res = f"{status_line}\r\n{content_type}\r\n{content_len}\r\n\r\n{file_content}"
+            http_res = f"{status_line}\r\n{content_type}\r\n{content_len}\r\n\r\n{file_content}".encode()
 
             return http_res
     else:
@@ -26,4 +26,4 @@ def post_file_handler(path, directory, content):
     with open(file_path, "w") as file:
         file.write(content)
 
-    return "HTTP/1.1 201 Created\r\n\r\n"
+    return "HTTP/1.1 201 Created\r\n\r\n".encode()
