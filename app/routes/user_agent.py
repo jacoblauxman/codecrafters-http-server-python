@@ -1,5 +1,5 @@
 def user_agent_handler(headers):
-    ua = headers.get("User-Agent")
+    ua = headers.get("User-Agent", "")
 
     content_type = "Content-Type: text/plain"
     content_len = f"Content-Length: {len(ua)}"
